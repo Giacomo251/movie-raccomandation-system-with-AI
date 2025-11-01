@@ -32,7 +32,6 @@ def get_similar_movies(movie_idx, X_features, df, top_k=5):
 
 
 
-    
 
 # Streamlit
 
