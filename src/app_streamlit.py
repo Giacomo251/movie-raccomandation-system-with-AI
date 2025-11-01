@@ -26,7 +26,7 @@ def get_similar_movies(movie_idx, X_features, df, top_k=5):
     top_indices = indices[:top_k]
 
     similar_df = df.iloc[top_indices][['names', 'score', 'genre', 'orig_lang', 'country']].copy()
-    similar_df['similarità'] = np.round(sims[top_indices], 3)
+    similar_df['Similarity'] = np.round(sims[top_indices], 3)
     return similar_df
 
 
@@ -36,9 +36,9 @@ def get_similar_movies(movie_idx, X_features, df, top_k=5):
 
 # Streamlit
 
-st.set_page_config(page_title="Movie Recommender", page_icon="🎬", layout="centered")
-st.title("🎬 Movie Recommender System")
-st.write("Un piccolo sistema di raccomandazione di film basato su rete neurale MLP (content-based).")
+st.set_page_config(page_title="Movie Recommender", layout="wide")
+st.title("Movie Recommender System")
+st.write("A movie recommendation system based on a content-based neural network (MLP).")
 
 # load data
 df, X_combined = load_data()
@@ -46,36 +46,62 @@ df, X_combined = load_data()
 
 # --- Selezione film ---
 movie_titles = df['names'].tolist()
-selected_movie = st.selectbox("Scegli un film:", movie_titles)
+selected_movie = st.selectbox("Select a film:", movie_titles)
 
 # Ottieni indice del film scelto
 movie_idx = df[df['names'] == selected_movie].index[0]
 
-st.subheader(f"📄 Dettagli di **{selected_movie}**")
+st.subheader(f"Information of **{selected_movie}**")
 col1, col2 = st.columns(2)
 with col1:
-    st.write(f"**Anno:** {df.iloc[movie_idx]['date_x']}")
-    st.write(f"**Genere:** {df.iloc[movie_idx]['genre']}")
-    st.write(f"**Lingua:** {df.iloc[movie_idx]['orig_lang']}")
+    st.write(f"**Date:** {df.iloc[movie_idx]['date_x']}")
+    st.write(f"**Genre:** {df.iloc[movie_idx]['genre']}")
+    st.write(f"**Language:** {df.iloc[movie_idx]['orig_lang']}")
 with col2:
-    st.write(f"**Punteggio:** {df.iloc[movie_idx]['score']}")
-    st.write(f"**Paese:** {df.iloc[movie_idx]['country']}")
+    st.write(f"**Score:** {df.iloc[movie_idx]['score']}")
+    st.write(f"**Country:** {df.iloc[movie_idx]['country']}")
     st.write(f"**Budget:** {df.iloc[movie_idx]['budget_x']:.0f}")
     st.write(f"**Revenue:** {df.iloc[movie_idx]['revenue']:.0f}")
 
 st.divider()
 
 # --- Raccomandazioni simili ---
-st.subheader("🎞️ Film simili consigliati")
+st.subheader("Recommended similar films")
 similar_df = get_similar_movies(movie_idx, X_combined, df, top_k=5)
-st.table(similar_df)
+
+#change the name of columns
+similar_df = similar_df.rename(columns={
+    'names': 'Names',
+    'score': 'Score',
+    'genre': 'Genre',
+    'orig_lang': 'Language',
+    'country': 'Country',
+    'similarità': 'Similarity'
+})
+
+
+#change the width of columns
+st.dataframe(
+    similar_df,
+    column_config={
+        "Names": st.column_config.Column(width="large"),
+        "Score": st.column_config.NumberColumn(format="%.1f", width="small"),
+        "Genre": st.column_config.Column(width="large"),
+        "Language": st.column_config.Column(width="small"),
+        "Country": st.column_config.Column(width="small"),
+        "Similarity": st.column_config.NumberColumn(format="%.3f", width="small"),
+    },
+    hide_index=True,
+    use_container_width=True  # adatta al layout
+)
+
 
 
 # --- Sezione rete neurale ---
 st.divider()
-st.subheader("🧠 Valutazione MLP (opzionale)")
+st.subheader("Score of MLP")
 
-use_model = st.checkbox("Usa modello MLP per stimare se il film piacerebbe")
+use_model = st.checkbox("Use MLP model to estimate whether the movie would be liked")
 if use_model:
     # usa X_combined (non X_features)
     input_dim = X_combined.shape[1]
@@ -92,7 +118,7 @@ if use_model:
         else:
             x_single = X_combined[movie_idx].reshape(1, -1)
             prob = model.predict_proba(x_single)[0]
-            st.write(f"**Probabilità che piaccia:** {prob * 100:.2f}%")
+            st.write(f"**probability of liking it:** {prob * 100:.2f}%")
     except Exception as e:
         st.error("⚠️ Errore nel caricamento dei pesi. Assicurati che il file esista e che l'architettura corrisponda.")
         st.code(str(e))
