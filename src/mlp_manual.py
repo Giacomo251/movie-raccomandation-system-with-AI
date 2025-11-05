@@ -73,9 +73,9 @@ class MLP:
 
     # --- Backpropagation ---
     def backward(self, X, y_true, lr=0.01):
-        """
-        update the weight for reduce the loss
-        """
+        
+        #update the weight for reduce the loss
+        
         m = X.shape[0]
         y_true = y_true.reshape(1, -1)
         

@@ -3,7 +3,7 @@ import os
 
 
 # ==========================
-# 💾 SALVATAGGIO PESI
+# SALVATAGGIO PESI
 # ==========================
 def save_weights(model, path):
     """
@@ -21,7 +21,7 @@ def save_weights(model, path):
 
 
 # ==========================
-# 📂 CARICAMENTO PESI
+# CARICAMENTO PESI
 # ==========================
 def load_weights(model, path):
     """
@@ -48,7 +48,7 @@ def load_weights(model, path):
 
 
 # ==========================
-# 🎯 ALTRE UTILITY OPZIONALI
+# ALTRE UTILITY OPZIONALI
 # ==========================
 def set_seed(seed=42):
     """

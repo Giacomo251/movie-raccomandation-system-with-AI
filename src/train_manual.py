@@ -66,7 +66,7 @@ if __name__ == "__main__":
     layer_sizes = [input_dim, 32, 16, 1]
 
     # Training parameters
-    epochs = 500
+    epochs = 100
     lr = 0.01
     batch_size = 32
 
